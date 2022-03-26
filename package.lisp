@@ -31,7 +31,7 @@
 
    :send-notify
 
-   :put-text-chipboard))
+   :put-text-clipboard))
 
 (defpackage :any.web
   (:import-from :cl-ppcre :all-matches-as-strings)

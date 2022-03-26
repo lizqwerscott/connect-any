@@ -82,5 +82,4 @@
 (defun send-clipboard (device)
   (send-text device (trivial-clipboard:text)))
 
-
 (in-package :cl-user)
