@@ -1,0 +1,56 @@
+(in-package :any.client)
+
+(defparameter *searchp* nil)
+(defparameter *devices* (make-hash-table :test #'equal))
+
+(defun send-connect (ip)
+  (web-get (format nil "~A:76778" ip)
+           "connect"
+           :args `(("name" . ,(get-user))
+                   ("id" . ,(get-id)))
+           :jsonp t))
+
+(defun add-device (ip)
+  (handler-case
+      (let ((result (send-connect ip)))
+        (when (and result
+                   (assoc-value result "name")
+                   (assoc-value result "device"))
+          (format t "handle name: ~A, device: ~A, ip: ~A~%" (assoc-value result "name")
+                  (assoc-value result "device") ip)
+          (if (string= (assoc-value result "name")
+                       (get-user))
+              (let ((device (assoc-value result "device")))
+                (format t "handle device: ~A ip: ~A~%" device ip)
+                (setf (gethash device *devices*)
+                      (list :device device :ip ip))
+                (format t "add device: ~A ip: ~A~%" device ip))
+              (format t "other people(~A) device~%" (assoc-value result "name")))))
+    (error (c)
+      ;(format t "~A~%" c)
+      nil)))
+
+(defun find-device ()
+  (do ()
+      ((not *searchp*) nil)
+    (when (not-nil)
+      (dolist (i (find-hosts))
+        (mapcar #'(lambda (ip)
+                    (if (gethash ip *devices*)
+                        (format t "already in devices")
+                        (add-device ip)))
+                (remove (get-device-ip) i :test #'string=))))
+    (format t "next~%")
+    (sleep 1)))
+
+(defun start-search ()
+  (setf *searchp* t)
+  (make-thread #'find-device :name "find-device"))
+
+(defun stop-search ()
+  (setf *searchp* nil))
+
+(defun show-device ()
+  (maphash #'(lambda (k v)
+               (format t "~A:~A~%" k v))
+           *devices*))
