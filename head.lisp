@@ -104,3 +104,4 @@
 
 (defun put-text-clipboard (text)
   (trivial-clipboard:text text))
+

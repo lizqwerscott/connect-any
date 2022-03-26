@@ -15,7 +15,9 @@
 
 (defun get-hosts (gateway-ip)
   (let ((ip (join "."
-                  (vector-list gateway-ip)))
+                  (mapcar #'(lambda (x)
+                              (format nil "~A" x))
+                          (vector-list gateway-ip))))
         (stream (make-string-output-stream :element-type 'character)))
     (run-shell (format nil "nmap -sP ~A/24" ip)
                  :output stream)
