@@ -37,7 +37,8 @@
                      "recive"
                      :args `(("device" . ,(get-id))
                              ("text" . ,text))
-                     :jsonp t))))
+                     :jsonp t
+                     :isbyte nil))))
 
 
 (defun add-device (ip)

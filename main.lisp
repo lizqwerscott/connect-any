@@ -48,7 +48,7 @@
 
 (defroute "/recive"
     (lambda (x)
-      (let ((text (parse (octets-to-string (car (last x))))))
+      (let ((text (parse (car (last x)))))
         (when text
           (when (find-device (assoc-value text "device"))
             (send-notify (format nil "~A send text" (assoc-value text "device")))
