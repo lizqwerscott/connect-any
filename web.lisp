@@ -79,3 +79,9 @@
     (if jsonp
         (parse text)
         text)))
+
+(defun handle-qs (str)
+  (mapcar #'(lambda (item)
+              (split "=" item))
+          (split "&" str)))
+

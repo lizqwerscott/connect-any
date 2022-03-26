@@ -27,7 +27,11 @@
    :set-device-ip
    :not-nil
 
-   :assoc-value))
+   :assoc-value
+
+   :send-notify
+
+   :put-text-chipboard))
 
 (defpackage :any.web
   (:import-from :cl-ppcre :all-matches-as-strings)
@@ -37,14 +41,23 @@
    :web-get
    :web-post-upload
    :web-post
-   :web-post-json))
+   :web-post-json
+
+   :handle-qs))
 
 (defpackage :any.client
   (:use :common-lisp :bordeaux-threads :any.web :any.head)
   (:export
+   :device-id
+   :device-ip
+   :device-p
+   :device-livep
    :start-search
    :stop-search
-   :show-device))
+   :show-device
+   :get-device-list
+   :find-device
+   :send-text))
 
 (defpackage :any.server
   (:use :common-lisp :clack :optima :any.web :any.head :babel)
@@ -54,7 +67,9 @@
    :server-stop))
 
 (defpackage #:connect-any
-  (:use :common-lisp :any.head :any.web :any.client :any.server)
+  (:use :common-lisp :any.head :any.web :any.client :any.server :str :babel :yason)
   (:export
+   :ptfs
    :start
+   :restart
    :stop))

@@ -16,10 +16,11 @@
                :optima
                :yason
                :bordeaux-threads
+               :trivial-clipboard
                :jonathan)
   :components ((:file "package")
                (:file "head")
                (:file "web")
                (:file "client")
                (:file "server")
-               (:file "connect-any")))
+               (:file "main")))

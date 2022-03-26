@@ -98,3 +98,9 @@
 
 (defun assoc-value (plist key)
   (cdr (assoc key plist :test #'string=)))
+
+(defun send-notify (text)
+  (run-shell (format nil "notify-send -t 50000 ~A" text)))
+
+(defun put-text-clipboard (text)
+  (trivial-clipboard:text text))
