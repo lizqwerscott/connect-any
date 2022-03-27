@@ -55,12 +55,12 @@
             (put-text-clipboard (assoc-value text "text")))))))
 
 (defun ptfs ()
-  (start (prompt-read "DeviceId")
-         (prompt-read "Name")
-         (prompt-read "Address")
-         (prompt-read-number "Port")))
+  (start-s (prompt-read "DeviceId")
+           (prompt-read "Name")
+           (prompt-read "Address")
+           (prompt-read-number "Port")))
 
-(defun start (id user server port)
+(defun start-s (id user server port)
   (set-id id)
   (set-user user)
   (when (and server port)
@@ -68,14 +68,14 @@
     (server-start :address server :port port)
     (start-search)))
 
-(defun restart (port)
+(defun restart-s (port)
   (when (and (not-nil)
              (get-device-ip)
              port)
     (server-start :address (get-device-ip) :port port)
     (start-search)))
 
-(defun stop ()
+(defun stop-s ()
   (server-stop)
   (stop-search))
 

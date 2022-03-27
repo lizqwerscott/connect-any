@@ -6,7 +6,8 @@
   :license  "Specify license here"
   :version "0.0.1"
   :serial t
-  :depends-on (:clack
+  :depends-on (:uiop
+               :clack
                :ip-interfaces
                :str
                :drakma

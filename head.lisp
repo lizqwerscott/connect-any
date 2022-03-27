@@ -51,9 +51,8 @@
                      :test #'equal-vector))
 
 (defun run-shell (program &key (output nil))
-  #+clozure (ccl:run-program "/bin/sh"
-                             (list "-c" (format nil "~A" program))
-                             :output output))
+  (run-program program
+               :output output))
 
 (defun vector-list (v &optional (i 0) (result nil))
   (if (< i (length v))
