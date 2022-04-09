@@ -3,7 +3,7 @@
 (defpackage :any.head
   (:import-from :jonathan :to-json)
   (:import-from :uiop :run-program)
-  (:use :common-lisp :clack :yason)
+  (:use :common-lisp :clack :yason :babel)
   (:export
    :and-list
    :and-vector
@@ -32,12 +32,16 @@
 
    :send-notify
 
-   :put-text-clipboard))
+   :put-text-clipboard
+
+   :stream-recive-string))
 
 (defpackage :any.web
   (:import-from :cl-ppcre :all-matches-as-strings)
   (:use :common-lisp :ip-interfaces :str :any.head :drakma :babel :yason)
   (:export
+   :get-local-ip
+
    :find-hosts
    :web-get
    :web-post-upload
@@ -58,7 +62,8 @@
    :show-device
    :get-device-list
    :find-device
-   :send-text))
+   :send-text
+   :add-device))
 
 (defpackage :any.server
   (:use :common-lisp :clack :optima :any.web :any.head :babel)
@@ -68,9 +73,9 @@
    :server-stop))
 
 (defpackage #:connect-any
-  (:use :common-lisp :any.head :any.web :any.client :any.server :str :babel :yason)
+  (:use :common-lisp :any.head :any.web :any.client :any.server :str :yason :flexi-streams)
   (:export
    :ptfs
-   :start
-   :restart
-   :stop))
+   :start-s
+   :restart-s
+   :stop-s))

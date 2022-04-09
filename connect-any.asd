@@ -12,6 +12,7 @@
                :str
                :drakma
                :babel
+               :flexi-streams
                :purl
                :alexandria
                :optima

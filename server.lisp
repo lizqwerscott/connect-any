@@ -10,7 +10,7 @@
         fn))
 
 (defun handler (env)
-  (destructuring-bind (&key request-method path-info request-uri query-string headers content-type content-length raw-body &allow-other-keys)
+  (destructuring-bind (&key remote-addr remote-port request-method path-info request-uri query-string headers content-type content-length raw-body &allow-other-keys)
       env
       (let ((route-fn (gethash path-info *routes*)))
         (format nil "request-method: ~A, path-info:~A, request-uri:~A, query-string: ~A~%"
@@ -23,11 +23,14 @@
             `(200
               nil
               (,(funcall route-fn
-                         (list request-method
-                               query-string
-                               content-type
-                               content-length
-                               raw-body))))
+                         (list :method request-method
+                               :uri request-uri
+                               :addr remote-addr
+                               :port remote-port
+                               :query-string query-string
+                               :content-type content-type
+                               :content-length content-length
+                               :raw-body raw-body))))
             `(404
               nil
               (,(format nil "The Path not find~%")))))))

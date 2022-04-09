@@ -16,6 +16,15 @@
     (lambda (x)
       ;(format t "~A~%" x)
       (declare (ignore x))
+      (let ((another-uri (getf x :uri))
+            (another-ip (getf x :addr))
+            (query (handle-qs (getf x :query-string))))
+        (format t "url: ~A~%" another-ip)
+        (format t "str: ~A~%" query)
+        (if (string= (get-user) (assoc-value query "name"))
+            (add-device another-ip
+                        (assoc-value query "id"))
+            (format t "another user~%")))
       (to-json-a `(("name" . ,(get-user))
                    ("device" . ,(get-id))))))
 
@@ -30,7 +39,7 @@
       (format t "~A~%" x)
       (mapcar #'(lambda (i)
                   (format t "~A~%" i))
-              (handle-qs (second x)))
+              (handle-qs (getf x :query-string)))
       "hello"))
 
 (defroute "/getdevicelist"
@@ -48,11 +57,24 @@
 
 (defroute "/recive"
     (lambda (x)
-      (let ((text (parse (car (last x)))))
-        (when text
-          (when (find-device (assoc-value text "device"))
-            (send-notify (format nil "~A send text" (assoc-value text "device")))
-            (put-text-clipboard (assoc-value text "text")))))))
+      (let ((body (stream-recive-string (getf x :raw-body)
+                                        (getf x :content-length))))
+        (if body
+            (let ((text (parse body)))
+              (if text
+                  (when (find-device (assoc-value text "device"))
+                    (send-notify (format nil "~A send text" (assoc-value text "device")))
+                    (format t "recive (~A) message:~A~%" (assoc-value text "device") (assoc-value text "text"))
+                    (put-text-clipboard (assoc-value text "text"))
+                    (to-json-a
+                     `(("msg" . 200)
+                       ("result" . "recive"))))
+                  (to-json-a
+                   `(("msg" . 404)
+                     ("result" . "the text is null")))))
+            (to-json-a
+             `(("msg" . 404)
+               ("result" . "not have body")))))))
 
 (defun ptfs ()
   (start-s (prompt-read "DeviceId")
@@ -60,7 +82,7 @@
            (prompt-read "Address")
            (prompt-read-number "Port")))
 
-(defun start-s (id user server port)
+(defun start-s (id user &optional (server (get-local-ip)) &optional (port 7677))
   (set-id id)
   (set-user user)
   (when (and server port)
@@ -68,7 +90,7 @@
     (server-start :address server :port port)
     (start-search)))
 
-(defun restart-s (port)
+(defun restart-s (&optional (port 7677))
   (when (and (not-nil)
              (get-device-ip)
              port)

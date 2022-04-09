@@ -99,8 +99,14 @@
   (cdr (assoc key plist :test #'string=)))
 
 (defun send-notify (text)
-  (run-shell (format nil "notify-send -t 50000 ~A" text)))
+  (run-shell (format nil "notify-send -t 5000 '~A'" text)))
 
 (defun put-text-clipboard (text)
   (trivial-clipboard:text text))
+
+(defun stream-recive-string (stream length)
+  (let ((result (make-array length :element-type '(unsigned-byte 8))))
+    (read-sequence result stream)
+    (format t "oct: ~A~%" result)
+    (octets-to-string result :encoding :utf-8)))
 

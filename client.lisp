@@ -38,10 +38,16 @@
                      :args `(("device" . ,(get-id))
                              ("text" . ,text))
                      :jsonp t
-                     :isbyte nil))))
+                     :isbyte t))))
+
+(defun add-device (ip device)
+  (if (gethash ip *devices*)
+      (format t "already in devices~%")
+      (setf (gethash ip *devices*)
+            (make-device :id device :ip ip :livep t))))
 
 
-(defun add-device (ip)
+(defun add-device-is (ip)
   (handler-case
       (let ((result (send-connect ip)))
         (when (and result
@@ -53,8 +59,7 @@
                        (get-user))
               (let ((device (assoc-value result "device")))
                 (format t "handle device: ~A ip: ~A~%" device ip)
-                (setf (gethash ip *devices*)
-                      (make-device :id device :ip ip :livep t))
+                (add-device ip device)
                 (format t "add device: ~A ip: ~A~%" device ip))
               (format t "other people(~A) device~%" (assoc-value result "name")))))
     (error (c)
@@ -67,7 +72,7 @@
       (mapcar #'(lambda (ip)
                   (if (gethash ip *devices*)
                       (format t "already in devices~%")
-                      (add-device ip)))
+                      (add-device-is ip)))
               (remove (get-device-ip) i :test #'string=)))))
 
 (defun devices-live ()
@@ -104,14 +109,16 @@
   (do ((i 0 (+ i 1)))
       ((not *searchp*) nil)
     (when (= (mod i 10) 0)
-      (search-devices))
+      ())
     (devices-live)
-    (format t "next~%")
     (sleep 1))
   (format t "run finish~%"))
 
 (defun start-search ()
   (setf *searchp* t)
+  (format t "start search device~%")
+  (search-devices)
+  (format t "end search device~%")
   (make-thread #'device-client-run :name "device-client"))
 
 (defun stop-search ()

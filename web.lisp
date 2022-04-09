@@ -2,6 +2,14 @@
 
 (defparameter *temp-str* nil)
 
+(defun get-local-ip ()
+  (join "."
+        (mapcar #'(lambda (x)
+                    (format nil "~A" x))
+                (vector-list
+                 (ip-interface-address
+                  (car (cdr (get-ip-interfaces))))))))
+
 (defun get-gateway-ip ()
   (remove-duplicates-v
    (mapcar #'(lambda (ip)
@@ -11,7 +19,7 @@
                    (cdr (get-ip-interfaces))))))
 
 (defun get-ip (str)
-  (all-matches-as-strings "[0-9]{3}.[0-9]{3}.[0-9]+.[0-9]+" str))
+  (all-matches-as-strings "[0-9]+.[0-9]+.[0-9]+.[0-9]+" str))
 
 (defun get-hosts (gateway-ip)
   (let ((ip (join "."
@@ -38,7 +46,6 @@
     (format nil "~A~A" url str-args)))
 
 (defun web-post-json (host command &key args (jsonp t) (isbyte t))
-
   (multiple-value-bind (bytes code headers)
       (http-request (generate-url host command)
                     :method :post
@@ -82,8 +89,13 @@
         (parse text)
         text)))
 
+(defun lst2-cons (lst)
+  (if (= 2 (length lst))
+      (cons (first lst) (second lst))
+      lst))
+
 (defun handle-qs (str)
   (mapcar #'(lambda (item)
-              (split "=" item))
+              (lst2-cons (split "=" item)))
           (split "&" str)))
 
