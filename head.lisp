@@ -110,3 +110,8 @@
     (format t "oct: ~A~%" result)
     (octets-to-string result :encoding :utf-8)))
 
+(defun bilibili-phone-sharep (str)
+  (contains? "b23.tv" str))
+
+(defun handle-bilibili-phone-share (str)
+  (car (all-matches-as-strings "https://b23.tv/.*$" str)))

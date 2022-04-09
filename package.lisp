@@ -2,8 +2,9 @@
 
 (defpackage :any.head
   (:import-from :jonathan :to-json)
+  (:import-from :cl-ppcre :all-matches-as-strings)
   (:import-from :uiop :run-program)
-  (:use :common-lisp :clack :yason :babel)
+  (:use :common-lisp :clack :yason :babel :str)
   (:export
    :and-list
    :and-vector
@@ -34,7 +35,10 @@
 
    :put-text-clipboard
 
-   :stream-recive-string))
+   :stream-recive-string
+
+   :bilibili-phone-sharep
+   :handle-bilibili-phone-share))
 
 (defpackage :any.web
   (:import-from :cl-ppcre :all-matches-as-strings)
@@ -62,7 +66,10 @@
    :show-device
    :get-device-list
    :find-device
+
    :send-text
+   :send-url
+
    :add-device))
 
 (defpackage :any.server
@@ -78,4 +85,7 @@
    :ptfs
    :start-s
    :restart-s
-   :stop-s))
+   :stop-s
+
+   :send-clipboard
+   :send-clipboard-url))

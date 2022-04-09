@@ -55,6 +55,38 @@
                                     lst)))
              `(("msg" . 404)))))))
 
+(defun handle-text (device text)
+  (send-notify (format nil "~A send text" device))
+  (format t "recive (~A) message:~A~%" device text)
+  (put-text-clipboard text)
+  (to-json-a
+   `(("msg" . 200)
+     ("result" . "recive text"))))
+
+(defun handle-url (device url)
+  (format t "recive (~A) url: ~A~%" device url)
+  (if (bilibili-phone-sharep url)
+      (run-shell (format nil "google-chrome-stable '~A' &" (handle-bilibili-phone-share url)))
+      (run-shell (format nil "google-chrome-stable '~A' &" url)))
+  (to-json-a
+   `(("msg" . 200)
+     ("result" . "recive url"))))
+
+(defun handle-recive (text)
+  (when (find-device (assoc-value text "device"))
+    (let ((type (assoc-value text "type"))
+          (device (assoc-value text "device"))
+          (data (assoc-value text "data")))
+      (cond ((string= type "text")
+             (handle-text device data))
+            ((string= type "url")
+             (handle-url device data))
+            (t (progn
+                 (format t "[ERROR]: ~A is not can find type~%" type)
+                 (to-json-a
+                  `(("msg" . 220)
+                    ("result" . "the type is not find")))))))))
+
 (defroute "/recive"
     (lambda (x)
       (let ((body (stream-recive-string (getf x :raw-body)
@@ -62,13 +94,7 @@
         (if body
             (let ((text (parse body)))
               (if text
-                  (when (find-device (assoc-value text "device"))
-                    (send-notify (format nil "~A send text" (assoc-value text "device")))
-                    (format t "recive (~A) message:~A~%" (assoc-value text "device") (assoc-value text "text"))
-                    (put-text-clipboard (assoc-value text "text"))
-                    (to-json-a
-                     `(("msg" . 200)
-                       ("result" . "recive"))))
+                  (handle-recive text)
                   (to-json-a
                    `(("msg" . 404)
                      ("result" . "the text is null")))))
@@ -82,7 +108,7 @@
            (prompt-read "Address")
            (prompt-read-number "Port")))
 
-(defun start-s (id user &optional (server (get-local-ip)) &optional (port 7677))
+(defun start-s (id user &optional (server (get-local-ip)) (port 7677))
   (set-id id)
   (set-user user)
   (when (and server port)
@@ -103,5 +129,8 @@
 
 (defun send-clipboard (device)
   (send-text device (trivial-clipboard:text)))
+
+(defun send-clipboard-url (device)
+  (send-url device (trivial-clipboard:text)))
 
 (in-package :cl-user)

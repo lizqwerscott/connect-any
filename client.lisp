@@ -36,7 +36,20 @@
       (web-post-json (format nil "~A:7677" (device-ip d))
                      "recive"
                      :args `(("device" . ,(get-id))
-                             ("text" . ,text))
+                             ("type" . "text")
+                             ("data" . ,text))
+                     :jsonp t
+                     :isbyte t))))
+
+(defun send-url (device url)
+  (let ((d (find-device device)))
+    (when (and d
+               (device-livep d))
+      (web-post-json (format nil "~A:7677" (device-ip d))
+                     "recive"
+                     :args `(("device" . ,(get-id))
+                             ("type" . "url")
+                             ("data" . ,url))
                      :jsonp t
                      :isbyte t))))
 
