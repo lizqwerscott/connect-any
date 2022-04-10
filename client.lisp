@@ -137,6 +137,12 @@
 (defun stop-search ()
   (setf *searchp* nil))
 
+(defun save-device ()
+  )
+
+(defun load-device ()
+  )
+
 (defun show-device ()
   (maphash #'(lambda (k v)
                (format t "~A:---------~%~A~%" k v))
