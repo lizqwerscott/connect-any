@@ -115,3 +115,15 @@
 
 (defun handle-bilibili-phone-share (str)
   (car (all-matches-as-strings "https://b23.tv/.*$" str)))
+
+(defun save-data-file (path data)
+  (with-open-file (in path :direction :output
+                           :if-exists :overwrite
+                           :if-does-not-exist :create)
+    (print data in)))
+
+(defun load-data-file (path)
+  (let ((result))
+    (with-open-file (in path :direction :input
+                             :if-does-not-exist :error)
+      (read in))))

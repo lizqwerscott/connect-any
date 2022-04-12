@@ -38,7 +38,10 @@
    :stream-recive-string
 
    :bilibili-phone-sharep
-   :handle-bilibili-phone-share))
+   :handle-bilibili-phone-share
+
+   :save-data-file
+   :load-data-file))
 
 (defpackage :any.web
   (:import-from :cl-ppcre :all-matches-as-strings)

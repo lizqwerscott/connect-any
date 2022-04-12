@@ -80,13 +80,16 @@
       nil)))
 
 (defun search-devices ()
+  (format t "start search device~%")
   (when (not-nil)
     (dolist (i (find-hosts))
       (mapcar #'(lambda (ip)
                   (if (gethash ip *devices*)
                       (format t "already in devices~%")
                       (add-device-is ip)))
-              (remove (get-device-ip) i :test #'string=)))))
+              (remove (get-device-ip) i :test #'string=))))
+  (save-device)
+  (format t "end search device~%"))
 
 (defun devices-live ()
   (maphash #'(lambda (k v)
@@ -129,19 +132,35 @@
 
 (defun start-search ()
   (setf *searchp* t)
-  (format t "start search device~%")
-  (search-devices)
-  (format t "end search device~%")
+  (when (not (uiop:probe-file* "./devices.txt"))
+    (with-open-file (in "./devices.txt" :direction :output
+                                        :if-exists :overwrite
+                                        :if-does-not-exist :create)
+      (print () in)))
+  (load-device)
+  (make-thread #'search-devices :name "device search")
   (make-thread #'device-client-run :name "device-client"))
 
 (defun stop-search ()
   (setf *searchp* nil))
 
 (defun save-device ()
-  )
+  (let ((result nil))
+    (maphash #'(lambda (k v)
+                 (push (list :id (device-id v)
+                             :ip (device-ip v)
+                             :livep (device-livep v))
+                       result))
+             *devices*)
+    (save-data-file "./devices.txt" result)))
 
 (defun load-device ()
-  )
+  (mapcar #'(lambda (x)
+              (setf (gethash (getf x :ip) *devices*)
+                    (make-device :id (getf x :id)
+                           :ip (getf x :ip)
+                           :livep nil)))
+          (load-data-file "./devices.txt")))
 
 (defun show-device ()
   (maphash #'(lambda (k v)
