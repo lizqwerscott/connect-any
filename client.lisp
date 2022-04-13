@@ -30,28 +30,22 @@
            :jsonp t))
 
 (defun send-text (device text)
-  (let ((d (find-device device)))
-    (when (and d
-               (device-livep d))
-      (web-post-json (format nil "~A:7677" (device-ip d))
+  (web-post-json (format nil "~A:7677" (device-ip device))
                      "recive"
                      :args `(("device" . ,(get-id))
                              ("type" . "text")
                              ("data" . ,text))
                      :jsonp t
-                     :isbyte t))))
+                     :isbyte t))
 
 (defun send-url (device url)
-  (let ((d (find-device device)))
-    (when (and d
-               (device-livep d))
-      (web-post-json (format nil "~A:7677" (device-ip d))
+  (web-post-json (format nil "~A:7677" (device-ip device))
                      "recive"
                      :args `(("device" . ,(get-id))
                              ("type" . "url")
                              ("data" . ,url))
                      :jsonp t
-                     :isbyte t))))
+                     :isbyte t))
 
 (defun add-device (ip device)
   (if (gethash ip *devices*)
@@ -185,7 +179,7 @@
                  (declare (ignore k))
                  (when (string= name
                                 (device-id v))
-                   (setf result v)))
+                   (push v result)))
              *devices*)
     result))
 

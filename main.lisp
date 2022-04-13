@@ -128,9 +128,23 @@
   (stop-search))
 
 (defun send-clipboard (device)
-  (send-text device (trivial-clipboard:text)))
+  (let ((devices (find-device device)))
+    (if devices
+        (send-text (if (= 1 (length devices))
+                       (car devices)
+                       (prompt-switch "device"
+                                      devices))
+                   (trivial-clipboard:text))
+        (format t "cant't find device"))))
 
 (defun send-clipboard-url (device)
-  (send-url device (trivial-clipboard:text)))
+  (let ((devices (find-device device)))
+    (if devices
+        (send-url (if (= 1 (length devices))
+                      (car devices)
+                      (prompt-switch "device"
+                                     devices))
+                  (trivial-clipboard:text))
+        (format t "cant't find device"))))
 
 (in-package :cl-user)
