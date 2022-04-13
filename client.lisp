@@ -173,7 +173,7 @@
              *devices*)
     result))
 
-(defun find-device (name)
+(defun find-device (name &key (livep t))
   (let ((result nil))
     (maphash #'(lambda (k v)
                  (declare (ignore k))
@@ -181,5 +181,9 @@
                                 (device-id v))
                    (push v result)))
              *devices*)
-    result))
+    (if livep
+        (remove-if #'(lambda (device)
+                       (not (device-livep device)))
+                   result)
+        result)))
 
