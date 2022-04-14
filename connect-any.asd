@@ -18,6 +18,7 @@
                :optima
                :yason
                :bordeaux-threads
+               :patron
                :trivial-clipboard
                :jonathan)
   :components ((:file "package")

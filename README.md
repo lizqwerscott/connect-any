@@ -7,6 +7,8 @@ This is a project to do device connect.
 
 xclip
 libnotify
+nmap
+arp-scan
 
 ## License
 

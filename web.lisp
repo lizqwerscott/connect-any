@@ -21,18 +21,34 @@
 (defun get-ip (str)
   (all-matches-as-strings "[0-9]+.[0-9]+.[0-9]+.[0-9]+" str))
 
+(defun get-arp-ip (str)
+  (all-matches-as-strings "[0-9]+.[0-9]+.[0-9]+.[0-9]+" str))
+
+(defun vector-ip-to-str (ip)
+  (join "."
+        (mapcar #'(lambda (x)
+                    (format nil "~A" x))
+                (vector-list ip))))
+
 (defun get-hosts (gateway-ip)
-  (let ((ip (join "."
-                  (mapcar #'(lambda (x)
-                              (format nil "~A" x))
-                          (vector-list gateway-ip))))
+  (let ((ip (vector-ip-to-str gateway-ip))
         (stream (make-string-output-stream :element-type 'character)))
     (run-shell (format nil "nmap -sP ~A/24" ip)
                  :output stream)
     (cdr (get-ip (get-output-stream-string stream)))))
 
+(defun get-hosts-arp (gateway-ip)
+  (let ((ip (vector-ip-to-str gateway-ip))
+        (stream (make-string-output-stream :element-type 'character)))
+    (run-shell (format nil
+                       "echo ~A | sudo -S -k arp-scan ~A/24"
+                       (get-password)
+                       ip)
+               :output stream)
+    (cdr (cdr (get-arp-ip (get-output-stream-string stream))))))
+
 (defun find-hosts ()
-  (mapcar #'get-hosts
+  (mapcar #'get-hosts-arp
           (get-gateway-ip)))
 
 (defun test ()
@@ -82,9 +98,10 @@
         (parse text)
         text)))
 
-(defun web-get (host command &key args (jsonp nil))
+(defun web-get (host command &key args (jsonp nil) (timeout 1))
   (let ((text (http-request (generate-url host command args)
-                            :method :get)))
+                            :method :get
+                            :connection-timeout timeout)))
     (if jsonp
         (parse text)
         text)))

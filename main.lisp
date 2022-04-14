@@ -106,9 +106,11 @@
   (start-s (prompt-read "DeviceId")
            (prompt-read "Name")
            (prompt-read "Address")
-           (prompt-read-number "Port")))
+           (prompt-read-number "Port")
+           (prompt-read "Password")))
 
-(defun start-s (id user &optional (server (get-local-ip)) (port 7677))
+(defun start-s (id user &optional (server (get-local-ip)) (port 7677) (password "12138"))
+  (set-password password)
   (set-id id)
   (set-user user)
   (when (and server port)

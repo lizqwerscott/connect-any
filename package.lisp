@@ -41,11 +41,14 @@
    :handle-bilibili-phone-share
 
    :save-data-file
-   :load-data-file))
+   :load-data-file
+
+   :set-password
+   :get-password))
 
 (defpackage :any.web
   (:import-from :cl-ppcre :all-matches-as-strings)
-  (:use :common-lisp :ip-interfaces :str :any.head :drakma :babel :yason)
+  (:use :common-lisp :ip-interfaces :str :any.head :drakma :babel :yason :patron)
   (:export
    :get-local-ip
 

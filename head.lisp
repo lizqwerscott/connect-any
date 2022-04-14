@@ -6,6 +6,14 @@
 
 (defparameter *device-ip* nil)
 
+(defparameter *user-password* nil)
+
+(defun set-password (password)
+  (setf *user-password* password))
+
+(defun get-password ()
+  *user-password*)
+
 (defun get-user ()
   *user-name*)
 
@@ -50,9 +58,10 @@
   (remove-duplicates lst
                      :test #'equal-vector))
 
-(defun run-shell (program &key (output nil))
+(defun run-shell (program &key (output nil) (input nil))
   (run-program program
-               :output output))
+               :output output
+               :input input))
 
 (defun vector-list (v &optional (i 0) (result nil))
   (if (< i (length v))
