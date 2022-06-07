@@ -44,29 +44,36 @@
    :load-data-file
 
    :set-password
-   :get-password))
+   :get-password
+
+   :list-or))
 
 (defpackage :any.web
   (:import-from :cl-ppcre :all-matches-as-strings)
-  (:use :common-lisp :ip-interfaces :str :any.head :drakma :babel :yason :patron)
+  (:use :common-lisp :ip-interfaces :str :any.head :babel :yason :patron :quri)
   (:export
    :get-local-ip
 
    :find-hosts
+
+   :make-url
+
    :web-get
    :web-post-upload
    :web-post
    :web-post-json
 
-   :handle-qs))
+   :handle-qs
+
+   :send-connect
+   :send-live
+   :send-text
+   :send-url))
 
 (defpackage :any.client
   (:use :common-lisp :bordeaux-threads :any.web :any.head)
   (:export
-   :device-id
-   :device-ip
-   :device-p
-   :device-livep
+   :device-live-ip
    :start-search
    :stop-search
    :show-device

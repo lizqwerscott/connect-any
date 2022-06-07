@@ -136,3 +136,9 @@
     (with-open-file (in path :direction :input
                              :if-does-not-exist :error)
       (read in))))
+
+(defun list-or (lst)
+  (when lst
+    (if (car lst)
+        t
+        (list-or (cdr lst)))))

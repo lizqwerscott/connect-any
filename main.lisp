@@ -72,6 +72,9 @@
    `(("msg" . 200)
      ("result" . "recive url"))))
 
+(defun handle-file (device file)
+  (format t "start recive (~A) file: ~A~%" device file))
+
 (defun handle-recive (text)
   (when (find-device (assoc-value text "device"))
     (let ((type (assoc-value text "type"))
@@ -102,6 +105,15 @@
              `(("msg" . 404)
                ("result" . "not have body")))))))
 
+(defroute "/recivefile"
+    (lambda (x)
+      (format t "recivefile: ~A~%" x)
+      (format t "recive:~A~%" (stream-recive-string (getf x :raw-body)
+                                                    (getf x :content-length)))
+      (to-json-a
+       `(("msg" . 404)
+         ("result" . "not have body")))))
+
 (defun ptfs ()
   (start-s (prompt-read "DeviceId")
            (prompt-read "Name")
@@ -129,23 +141,17 @@
   (server-stop)
   (stop-search))
 
-(defun send-clipboard (device)
-  (let ((devices (find-device device)))
-    (if devices
-        (send-text (if (= 1 (length devices))
-                       (car devices)
-                       (prompt-switch "device"
-                                      devices))
+(defun send-clipboard (id)
+  (let ((device (find-device id)))
+    (if device
+        (send-text (device-live-ip device)
                    (trivial-clipboard:text))
         (format t "cant't find device"))))
 
-(defun send-clipboard-url (device)
-  (let ((devices (find-device device)))
-    (if devices
-        (send-url (if (= 1 (length devices))
-                      (car devices)
-                      (prompt-switch "device"
-                                     devices))
+(defun send-clipboard-url (id)
+  (let ((device (find-device id)))
+    (if device
+        (send-url (device-live-ip device)
                   (trivial-clipboard:text))
         (format t "cant't find device"))))
 

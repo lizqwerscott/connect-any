@@ -10,10 +10,10 @@
                :clack
                :ip-interfaces
                :str
-               :drakma
+               :dexador
                :babel
                :flexi-streams
-               :purl
+               :quri
                :alexandria
                :optima
                :yason

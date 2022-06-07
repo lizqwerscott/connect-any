@@ -10,6 +10,7 @@
         fn))
 
 (defun handler (env)
+  (format t "get env:~A~%" env)
   (destructuring-bind (&key remote-addr remote-port request-method path-info request-uri query-string headers content-type content-length raw-body &allow-other-keys)
       env
       (let ((route-fn (gethash path-info *routes*)))
